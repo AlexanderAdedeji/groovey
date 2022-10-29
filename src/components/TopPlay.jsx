@@ -96,7 +96,7 @@ const TopPlay = () => {
       <div className="w-full flex-row justify-between items-center">
         <div className="flex flex-row justify-between items-center">
           <h2 className="text-white font-boild text-2xl">Top Artist</h2>
-          <Link to="/top-artist">
+          <Link to="/top-artists">
             <p className="text-gray-300 text-base cursor-pointer"> See More</p>
           </Link>
         </div>

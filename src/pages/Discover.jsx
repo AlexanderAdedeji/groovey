@@ -2,26 +2,39 @@ import { Error, Loader, SongCard } from "../components";
 import { useDispatch, useSelector } from "react-redux";
 import { genres } from "../assets/constants";
 
-import { useGetTopWorldChartsQuery } from "../redux/services/shazamCore";
+import {
+  useGetTopWorldChartsQuery,
+  useGetSongsByGenreQuery,
+} from "../redux/services/shazamCore";
+import { selectGenreListId } from "../redux/features/playerSlice";
 
 const Discover = () => {
   const dispatch = useDispatch();
-  const {activeSong, isPlaying} = useSelector((state) => state.player);
+  const { activeSong, isPlaying, genreListId } = useSelector(
+    (state) => state.player
+  );
 
-  const { data, isFetching, error } = useGetTopWorldChartsQuery();
-  const genreTitle = "Pop";
+  const { data, isFetching, error } = useGetSongsByGenreQuery( genreListId|| 'POP' );
+  const genreTitle = "POP";
 
-  if (isFetching) return <Loader title="Loading songs..." />;
+  // const {
+  //   data: genreData,
+  //   isFetching: genreFetching,
+  //   error: genreError,
+  // } = useLazyGetTopWorldChartsByGenreQuery(genre);
+  if (isFetching) return <Loader title={`Loading ${genreListId.replace("_", " ") || 'POP'} songs...` }/>;
   if (error) return <Error />;
   return (
     <div className="flex flex-col ">
       <div className="w-full flex justify-between items-center sm:flex-row flex-col mt-4 mb-10">
         <h2 className="font-bold text-3xl text-white text-left">
-          Discover {genreTitle}
+          Discover {genreListId.replace("_", " ") || 'POP'}
         </h2>
         <select
-          onChange={() => {}}
-          value=""
+          onChange={(e) => {
+            dispatch(selectGenreListId(e.target.value));
+          }}
+          value={genreListId || "POP"}
           className="bg-black text-gray-300 p-3 text-sm rounded-lg outline-none sm:mt-0 mt-5"
         >
           {genres.map((genre) => (
@@ -33,7 +46,14 @@ const Discover = () => {
       </div>
       <div className="flex flex-wrap sm:justify-start justify-center gap-8">
         {data?.map((song, idx) => (
-          <SongCard key={song.key} song={song} i={idx} isPlaying={isPlaying} activeSong={activeSong}  data={data}/>
+          <SongCard
+            key={song.key}
+            song={song}
+            i={idx}
+            isPlaying={isPlaying}
+            activeSong={activeSong}
+            data={data}
+          />
         ))}
       </div>
     </div>
